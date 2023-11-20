@@ -51,39 +51,41 @@ describe("GET /api", () => {
   });
 });
 
-describe('/api/articles/:article_id', () => {
-  test('200: should return article data for specific article_id provided', () => {
+describe("/api/articles/:article_id", () => {
+  test("200: should return article data for specific article_id provided", () => {
     return request(app)
-    .get("/api/articles/1")
-    .expect(200)
-    .then(({body}) => {
-      expect(body).toEqual([{
-        article_id: 1,
-        title: "Living in the shadow of a great man",
-        topic: "mitch",
-        author: "butter_bridge",
-        body: "I find this existence challenging",
-        created_at: expect.any(String), // the Number from articles.js keeps converting to an actual string data - hopefully this is correct
-        votes: 100,
-        article_img_url:
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-      }])
-    })
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual([
+          {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: expect.any(String),
+            votes: 100,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          },
+        ]);
+      });
   });
-  test('404: returns error for invalid article id NUMBER', () => {
+  test("404: returns error for valid article id but does NOT exist", () => {
     return request(app)
-    .get('/api/articles/124124')
-    .expect(404)
-    .then(({body}) => {
-      expect(body.msg).toEqual("invalid article id")
-    })
-  })
-  test('400: returns error for invalid article id TYPE', () => {
+      .get("/api/articles/124124")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("invalid article id");
+      });
+  });
+  test("400: returns error for invalid article_id", () => {
     return request(app)
-    .get('/api/articles/hello')
-    .expect(400)
-    .then(({body}) => {
-      expect(body.msg).toEqual("Bad request")
-    })
-  })
+      .get("/api/articles/hello")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
 });
