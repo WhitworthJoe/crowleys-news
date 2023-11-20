@@ -1,3 +1,6 @@
-# Northcoders News API
+# Crowleys News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+Welcome to Crowleys News API, the home of passion tropical news!
+
+To use this repo you will need to run 'npm install' and create two .env files - '.env.test' and '.env.development' - within your project!
+You can do this in your command line with 'touch .end.test' and 'touch .end.development'.
