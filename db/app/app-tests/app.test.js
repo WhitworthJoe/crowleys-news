@@ -1,6 +1,7 @@
 const request = require("supertest");
 const seed = require("../../seeds/seed");
 const db = require("../../../db/connection");
+const endpoints = require("../../../endpoints.json");
 const {
   articleData,
   commentData,
@@ -43,8 +44,9 @@ describe("GET /api", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body).toEqual({ endpoints: expect.any(Object) });
-        expect(body.endpoints["GET /api/topics"]).toBeDefined();
-        expect(body.endpoints["GET /api/articles"]).toBeDefined();
+        Object.entries(endpoints).forEach(([endpoint]) => {
+          expect(endpoints[endpoint]).toBeDefined();
+        });
       });
   });
 });
