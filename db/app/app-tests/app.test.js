@@ -51,7 +51,7 @@ describe("GET /api", () => {
   });
 });
 
-describe("/api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   test("200: should return article data for specific article_id provided", () => {
     return request(app)
       .get("/api/articles/1")
@@ -90,7 +90,7 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-describe('/api/getArticles', () => {
+describe('GET /api/getArticles', () => {
   test('200: Should return an array of all article objects with multiple properties, sorted by date and no body property', () => {
     return request(app)
     .get("/api/articles")
@@ -114,3 +114,55 @@ describe('/api/getArticles', () => {
     })
   });
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: should return a sorted array of all comments for specified article via the article_id, with the most recent first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const {comments} = body
+        expect(comments).toBeSortedBy("created_at", {descending: true})
+        expect(comments.length).toBeGreaterThan(0)
+        comments.forEach((comment) => {
+          expect(comment).not.toEqual({})
+          expect(comment).toMatchObject(
+            {
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+            },
+          );
+        });
+      });
+  });
+  test('200: should return an empty array when there are no comments', () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const {comments} = body
+        expect(comments).toEqual([])
+      });
+  });
+  test("404: returns error for valid article id but does NOT exist", () => {
+    return request(app)
+      .get("/api/articles/124124/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("No comments for this article");
+      });
+  });
+  test("400: returns error for invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/hello/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+});
+

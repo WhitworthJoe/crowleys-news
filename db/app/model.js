@@ -1,3 +1,4 @@
+const { nextTick } = require("process");
 const db = require("../../db/connection");
 const fs = require("fs/promises");
 
@@ -33,3 +34,15 @@ exports.selectArticleById = (article_id) => {
       return data.rows;
     });
 };
+
+exports.selectCommentsByArticleId = (article_id) => {
+  return db
+    .query(
+      `SELECT comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;`,
+      [article_id]
+    )
+    .then(({ rows }) => {
+      return rows;
+    })
+};
+
