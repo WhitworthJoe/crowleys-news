@@ -1,12 +1,19 @@
-const { selectTopics, selectEndpoints, selectArticleById, selectArticles, insertCommentByArticleId } = require("./model")
+const {
+  selectTopics,
+  selectEndpoints,
+  selectArticleById,
+  selectCommentsByArticleId,
+  selectArticles, insertCommentByArticleId,
+} = require("./model");
+const { checkExists } = require("./utils");
 
 exports.getEndpoints = (req, res, next) => {
-    selectEndpoints()
+  selectEndpoints()
     .then((endpoints) => {
-        res.status(200).send({endpoints: endpoints})
+      res.status(200).send({ endpoints: endpoints });
     })
-    .catch(next)
-}
+    .catch(next);
+};
 
 exports.getTopics = (req, res, next) => {
   selectTopics()
@@ -17,12 +24,12 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-    selectArticles()
+  selectArticles()
     .then((articles) => {
-        res.status(200).send(articles)
+      res.status(200).send(articles);
     })
-    .catch(next)
-}
+    .catch(next);
+};
 
 exports.getArticlesById = (req, res, next) => {
   const { article_id } = req.params;
@@ -32,6 +39,21 @@ exports.getArticlesById = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getCommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const commentPromises = [selectCommentsByArticleId(article_id)];
+  if (article_id) {
+    commentPromises.push(checkExists("articles", "article_id", article_id));
+  }
+  Promise.all(commentPromises)
+    .then((resolvedPromises) => {
+      const comments = resolvedPromises[0];
+      res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+
 exports.postCommentByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const newComment = req.body;
