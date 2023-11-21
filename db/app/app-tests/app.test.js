@@ -114,3 +114,64 @@ describe('/api/getArticles', () => {
     })
   });
 });
+
+describe('PATCH /api/articles/:article_id', () => {
+  test('200: updates an existing articles votes based on article id and returns updated article', () => {
+    return request(app)
+    .patch(`/api/articles/1`)
+    .send({inc_votes: 150})
+    .expect(200)
+    .then(({body}) => {
+      const updatedArticle = body;
+      expect(updatedArticle).toEqual({
+        article_id: 1,
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+        created_at: expect.any(String),
+        votes: 250,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      })
+    }) 
+  });
+  test('200: update works as above with negative inv_votes', () => {
+    return request(app)
+    .patch(`/api/articles/1`)
+    .send({inc_votes: -150})
+    .expect(200)
+    .then(({body}) => {
+      const updatedArticle = body;
+      expect(updatedArticle).toEqual({
+        article_id: 1,
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+        created_at: expect.any(String),
+        votes: -50,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      })
+    }) 
+  });
+  test('400: returns error for an invalid patch article ID character type (expects Numbers, not String)', () => {
+    return request(app)
+    .patch(`/api/articles/1`)
+    .send({inc_votes: "fifty"})
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe("Bad request")
+    })
+  });
+  test('404: returns error for a valid article ID but does not exist', () => {
+    return request(app)
+    .patch(`/api/articles/666`)
+    .send({inc_votes: 500})
+    .expect(404)
+    .then(({body})=> {
+      expect(body.msg).toBe("invalid article id")
+    })
+  });
+});

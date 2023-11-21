@@ -33,3 +33,13 @@ exports.selectArticleById = (article_id) => {
       return data.rows;
     });
 };
+
+exports.updateArticleById = (article_id, updateData) => {
+  return db.query(`UPDATE articles SET votes = votes + $1 WHERE articles.article_id = $2 RETURNING *;`, [updateData, article_id])
+  .then((data) => {
+    if (data.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "invalid article id" });
+    }
+    return data.rows[0]
+  })
+}
