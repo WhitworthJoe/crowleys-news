@@ -97,8 +97,8 @@ describe('/api/getArticles', () => {
     .expect(200)
     .then(({body})=> {
       expect(body).toHaveLength(13)
+      expect(body).toBeSortedBy("created_at", {coerce: true,})
       body.forEach((article) => {
-        console.log(article)
         expect(article).toMatchObject({
           author: expect.any(String),
           title: expect.any(String),
@@ -109,6 +109,7 @@ describe('/api/getArticles', () => {
           article_img_url: expect.any(String),
           comment_count: expect.any(String)
         })
+        expect(article).not.toHaveProperty('body');
       })
     })
   });
