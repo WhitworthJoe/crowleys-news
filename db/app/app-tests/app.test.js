@@ -137,6 +137,15 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
+  test('200: should return an empty array when there are no comments', () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const {comments} = body
+        expect(comments).toEqual([])
+      });
+  });
   test("404: returns error for valid article id but does NOT exist", () => {
     return request(app)
       .get("/api/articles/124124/comments")
