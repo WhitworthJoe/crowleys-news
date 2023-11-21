@@ -123,7 +123,9 @@ describe("GET /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         const {comments} = body
         expect(comments).toBeSortedBy("created_at", {descending: true})
+        expect(comments.length).toBeGreaterThan(0)
         comments.forEach((comment) => {
+          expect(comment).not.toEqual({})
           expect(comment).toMatchObject(
             {
               comment_id: expect.any(Number),
