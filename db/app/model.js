@@ -1,3 +1,4 @@
+const { nextTick } = require("process");
 const db = require("../../db/connection");
 const fs = require("fs/promises");
 
@@ -35,11 +36,30 @@ exports.selectArticleById = (article_id) => {
 };
 
 exports.selectCommentsByArticleId = (article_id) => {
-  return db.query(`SELECT comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;`, [article_id])
-  .then(({rows}) => {
-    if (!rows.length) {
-      return Promise.reject({ status: 404, msg: "No comments for this article" });
-    }
-    return rows
-  })
-}
+  return db
+    .query(
+      `SELECT comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;`,
+      [article_id]
+    )
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "No comments for this article",
+        });
+      }
+      return rows;
+    });
+};
+
+exports.insertCommentByArticleId = (article_id, newComment) => {
+  const { username, body } = newComment;
+  return db
+    .query(
+      `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *`,
+      [article_id, username, body]
+    )
+    .then((data) => {
+      return data.rows[0];
+    })
+};

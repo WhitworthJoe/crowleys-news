@@ -51,7 +51,7 @@ describe("GET /api", () => {
   });
 });
 
-describe("/api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   test("200: should return article data for specific article_id provided", () => {
     return request(app)
       .get("/api/articles/1")
@@ -90,7 +90,7 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-describe('/api/getArticles', () => {
+describe('GET /api/getArticles', () => {
   test('200: Should return an array of all article objects with multiple properties, sorted by date and no body property', () => {
     return request(app)
     .get("/api/articles")
@@ -115,7 +115,7 @@ describe('/api/getArticles', () => {
   });
 });
 
-describe("/api/articles/:article_id/comments", () => {
+describe("GET /api/articles/:article_id/comments", () => {
   test("200: should return a sorted array of all comments for specified article via the article_id, with the most recent first", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -153,4 +153,67 @@ describe("/api/articles/:article_id/comments", () => {
         expect(body.msg).toEqual("Bad request");
       });
   });
+});
+
+describe('POST /api/articles/:article_id/comments', () => {
+  test('201: Should add new comment to specified article_id and return it', () => {
+    const newComment = {
+      username: "rogersop",
+      body: "this is an example of the body"
+    }
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send(newComment)
+    .expect(201)
+    .then(({body}) => {
+      const {postedComment} = body
+      expect(postedComment).toMatchObject({
+        comment_id: expect.any(Number),
+        votes: expect.any(Number),
+        created_at: expect.any(String),
+        author: "rogersop",
+        body: "this is an example of the body",
+        article_id: 1,
+      })
+    })
+  });
+  test('400: returns error if username is not present in users', () => {
+    const newComment = {
+      username: "itzCrowley",
+      body: "I am always living in the shadow of a great man, my father Joe, so I relate to this article"
+    }
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send(newComment)
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("username does not exist")
+    })
+  });
+  test('400: returns error if valid article ID but does not exist', () => {
+    const newComment = {
+      username: "rogersop",
+      body: "this is an example of the body"
+    }
+    return request(app)
+    .post("/api/articles/1523523/comments")
+    .send(newComment)
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("article does not exist")
+    })
+  });
+  test('400: returns error if invalid article id', () => {
+    const newComment = {
+      username: "rogersop",
+      body: "this is an example of the body"
+    }
+    return request(app)
+    .post("/api/articles/hello/comments")
+    .send(newComment)
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request")
+    })
+  })
 });
