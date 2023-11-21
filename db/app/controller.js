@@ -1,4 +1,5 @@
 const { selectTopics, selectEndpoints, selectArticleById, selectCommentsByArticleId } = require("./model");
+const { checkExists } = require("./utils");
 
 exports.getEndpoints = (req, res, next) => {
   selectEndpoints()
@@ -27,9 +28,14 @@ exports.getArticlesById = (req, res, next) => {
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  selectCommentsByArticleId(article_id)
-    .then((comments) => {
-      res.status(200).send(comments);
+  const commentPromises = [selectCommentsByArticleId(article_id)]
+  if (article_id){
+    commentPromises.push(checkExists("comments", "article_id", article_id))
+  }
+  Promise.all(commentPromises)
+    .then((resolvedPromises) => {
+      const comments = resolvedPromises[0]
+      res.status(200).send({comments});
     })
     .catch(next);
 };

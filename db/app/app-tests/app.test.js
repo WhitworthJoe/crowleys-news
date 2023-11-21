@@ -96,7 +96,7 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body }) => {
-        const comments = body
+        const {comments} = body
         expect(comments).toBeSortedBy("created_at", {descending: true})
         comments.forEach((comment) => {
           expect(comment).toMatchObject(
@@ -117,7 +117,7 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/124124/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toEqual("invalid article id");
+        expect(body.msg).toEqual("No comments for this article");
       });
   });
   test("400: returns error for invalid article_id", () => {
