@@ -3,7 +3,7 @@ const {
   selectEndpoints,
   selectArticleById,
   selectCommentsByArticleId,
-  selectArticles,
+  selectArticles, insertCommentByArticleId,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -54,3 +54,12 @@ exports.getCommentsByArticleId = (req, res, next) => {
     .catch(next);
 };
 
+exports.postCommentByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const newComment = req.body;
+  insertCommentByArticleId(article_id, newComment)
+    .then((rows) => {
+      res.status(201).send({ postedComment: rows });
+    })
+    .catch(next);
+};

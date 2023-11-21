@@ -46,3 +46,19 @@ exports.selectCommentsByArticleId = (article_id) => {
     })
 };
 
+
+exports.insertCommentByArticleId = (article_id, newComment) => {
+  const { username, body } = newComment;
+  if (!username || !body) {
+    return Promise.reject({status: 400, msg: "Bad request. Username and Body are required"})
+  }
+  return db
+    .query(
+      `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *`,
+      [article_id, username, body]
+    )
+    .then((data) => {
+      return data.rows[0];
+    })
+};
+
