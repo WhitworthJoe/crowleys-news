@@ -52,14 +52,4 @@ exports.selectCommentsByArticleId = (article_id) => {
     });
 };
 
-exports.insertCommentByArticleId = (article_id, newComment) => {
-  const { username, body } = newComment;
-  return db
-    .query(
-      `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *`,
-      [article_id, username, body]
-    )
-    .then((data) => {
-      return data.rows[0];
-    })
-};
+
