@@ -1,4 +1,4 @@
-const { selectTopics, selectEndpoints, selectArticleById, selectCommentsByArticleId } = require("./model");
+const { selectTopics, selectEndpoints, selectArticleById, selectCommentsByArticleId, selectArticles } = require("./model");
 const { checkExists } = require("./utils");
 
 exports.getEndpoints = (req, res, next) => {
@@ -16,6 +16,14 @@ exports.getTopics = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getArticles = (req, res, next) => {
+    selectArticles()
+    .then((articles) => {
+        res.status(200).send(articles)
+    })
+    .catch(next)
+}
 
 exports.getArticlesById = (req, res, next) => {
   const { article_id } = req.params;
