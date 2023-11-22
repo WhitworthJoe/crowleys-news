@@ -90,7 +90,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe('GET /api/getArticles', () => {
+describe('GET /api/articles', () => {
   test('200: Should return an array of all article objects with multiple properties, sorted by date and no body property', () => {
     return request(app)
     .get("/api/articles")
