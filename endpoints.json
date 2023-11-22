@@ -54,5 +54,8 @@
       "body": "Massive intercranial brain haemorrhage",
       "article_id": "1"
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "removes a comment from the comments data table via comment id - does not provide a response"
   }
 }
