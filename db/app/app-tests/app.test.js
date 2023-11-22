@@ -264,3 +264,15 @@ describe('POST /api/articles/:article_id/comments', () => {
     })
   })
 });
+
+// describe('GET /api/users', () => {
+//   test('200: Should return an array of user objects with 3 properties', () => {
+//     return request(app)
+//     .get("/api/users")
+//     .expect(200)
+//     .then(({body}) => {
+//       const { users } = body
+//       expect(users).toHaveLength(3)
+//     })
+//   });
+// });

@@ -62,3 +62,9 @@ exports.insertCommentByArticleId = (article_id, newComment) => {
     })
 };
 
+exports.selectUsers = () => {
+  return db.query(`SELECT username, name, avatar_url FROM comments;`)
+  .then((data) => {
+    return data.rows
+  })
+}

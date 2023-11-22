@@ -3,7 +3,9 @@ const {
   selectEndpoints,
   selectArticleById,
   selectCommentsByArticleId,
-  selectArticles, insertCommentByArticleId,
+  selectArticles,
+  insertCommentByArticleId,
+  selectUsers,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -62,4 +64,10 @@ exports.postCommentByArticleId = (req, res, next) => {
       res.status(201).send({ postedComment: rows });
     })
     .catch(next);
+};
+
+exports.getUsers = (req, res, next) => {
+  selectUsers().then((users) => {
+    res.status(200).send({ users: users });
+  });
 };
