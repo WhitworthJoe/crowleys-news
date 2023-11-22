@@ -7,7 +7,8 @@ const {
   postCommentByArticleId,
   getCommentsByArticleId,
   patchArticlesById, 
-  deleteCommentByCommentId} = require("./controller");
+  deleteCommentByCommentId, 
+  getUsers} = require("./controller");
 const {
   handleCustomErrors,
   handleServerErrors,
@@ -28,6 +29,7 @@ app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 app.patch("/api/articles/:article_id", patchArticlesById);app.delete("/api/comments/:comment_id", deleteCommentByCommentId)
+app.get("/api/users", getUsers)
 
 app.use(handlePsqlErrors);
 app.use(handleCustomErrors);

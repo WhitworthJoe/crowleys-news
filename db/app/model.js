@@ -64,6 +64,13 @@ exports.insertCommentByArticleId = (article_id, newComment) => {
     });
 };
 
+exports.selectUsers = () => {
+  return db.query(`SELECT * FROM users;`)
+  .then((data) => {
+    return data.rows
+  })
+}
+
 exports.updateArticleById = (article_id, updateData) => {
   return db
     .query(

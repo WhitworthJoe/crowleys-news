@@ -3,7 +3,9 @@ const {
   selectEndpoints,
   selectArticleById,
   selectCommentsByArticleId,
-  selectArticles, updateArticleById, insertCommentByArticleId, removeCommentByCommentId,
+  selectArticles,
+  updateArticleById, insertCommentByArticleId, removeCommentByCommentId,
+  selectUsers,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -72,6 +74,13 @@ exports.postCommentByArticleId = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getUsers = (req, res, next) => {
+  selectUsers().then((users) => {
+    res.status(200).send({ users: users });
+  });
+};
+
 
 exports.deleteCommentByCommentId = (req, res, next) => {
   const { comment_id } = req.params;
