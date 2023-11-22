@@ -93,3 +93,10 @@ exports.removeCommentByCommentId = (comment_id) => {
     return data.rows
   })
 }
+
+exports.selectArticlesByTopic = (topic) => {
+  return db.query(`SELECT * FROM articles WHERE topic = $1;`, [topic])
+  .then((data) => {
+    return data.rows
+  })
+}

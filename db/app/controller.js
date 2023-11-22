@@ -4,8 +4,11 @@ const {
   selectArticleById,
   selectCommentsByArticleId,
   selectArticles,
-  updateArticleById, insertCommentByArticleId, removeCommentByCommentId,
+  updateArticleById,
+  insertCommentByArticleId,
+  removeCommentByCommentId,
   selectUsers,
+  selectArticlesByTopic,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -26,11 +29,20 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectArticles()
-    .then((articles) => {
-      res.status(200).send(articles);
-    })
-    .catch(next);
+  const { topic } = req.query;
+  if (topic) {
+    selectArticlesByTopic(topic)
+      .then((articles) => {
+        res.status(200).send(articles);
+      })
+      .catch(next);
+  } else {
+    selectArticles()
+      .then((articles) => {
+        res.status(200).send(articles);
+      })
+      .catch(next);
+  }
 };
 
 exports.getArticlesById = (req, res, next) => {
@@ -43,14 +55,14 @@ exports.getArticlesById = (req, res, next) => {
 };
 
 exports.patchArticlesById = (req, res, next) => {
-  const {article_id} = req.params;
-  const {inc_votes} = req.body;
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
   updateArticleById(article_id, inc_votes)
-  .then((updatedArticle) => {
-    res.status(200).send(updatedArticle)
-  })
-  .catch(next)
-}
+    .then((updatedArticle) => {
+      res.status(200).send(updatedArticle);
+    })
+    .catch(next);
+};
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const commentPromises = [selectCommentsByArticleId(article_id)];
@@ -81,12 +93,11 @@ exports.getUsers = (req, res, next) => {
   });
 };
 
-
 exports.deleteCommentByCommentId = (req, res, next) => {
   const { comment_id } = req.params;
   removeCommentByCommentId(comment_id)
-  .then(() => {
-    res.status(204).send()
-  })
-  .catch(next)
-}
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch(next);
+};
