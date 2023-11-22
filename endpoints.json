@@ -54,5 +54,37 @@
       "body": "Massive intercranial brain haemorrhage",
       "article_id": "1"
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Posts a new comment to an article specified via article_id param",
+    "requestBodyAccepts": "Username, Body",
+    "exampleRequest": {
+      "username": "rogersop",
+      "body": "this is an example of the body"
+    },
+    "exampleResponse": {
+      "comment_id": "19",
+      "votes": "0",
+      "created_at": "expect.any(String)",
+      "author": "rogersop",
+      "body": "this is an example of the body",
+      "article_id": "1"
+    }
+  },
+  "Patch /api/articles/:article_id": {
+    "description": "Posts a new comment to an article specified via article_id param",
+    "requestBodyAccepts": "{ inc_votes: newVote } where newVote = votes to incrememnt by",
+    "exampleRequest": "{ inv_votes: 150 }",
+    "exampleResponse": {
+      "article_id": "1",
+      "title": "Living in the shadow of a great man",
+      "topic": "mitch",
+      "author": "butter_bridge",
+      "body": "I find this existence challenging",
+      "created_at": "expect.any(String)",
+      "votes": "250",
+      "article_img_url":
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    }
   }
 }
