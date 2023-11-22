@@ -84,3 +84,12 @@ exports.updateArticleById = (article_id, updateData) => {
       return data.rows[0];
     });
 };
+exports.removeCommentByCommentId = (comment_id) => {
+  return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [comment_id])
+  .then((data) => {
+    if (data.rows.length === 0) {
+      return Promise.reject({status: 404, msg: "Comment does not exist"})
+    }
+    return data.rows
+  })
+}
