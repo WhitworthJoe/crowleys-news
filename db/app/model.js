@@ -43,14 +43,16 @@ exports.selectCommentsByArticleId = (article_id) => {
     )
     .then(({ rows }) => {
       return rows;
-    })
+    });
 };
-
 
 exports.insertCommentByArticleId = (article_id, newComment) => {
   const { username, body } = newComment;
   if (!username || !body) {
-    return Promise.reject({status: 400, msg: "Bad request. Username and Body are required"})
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request. Username and Body are required",
+    });
   }
   return db
     .query(
@@ -59,6 +61,19 @@ exports.insertCommentByArticleId = (article_id, newComment) => {
     )
     .then((data) => {
       return data.rows[0];
-    })
+    });
 };
 
+exports.updateArticleById = (article_id, updateData) => {
+  return db
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE articles.article_id = $2 RETURNING *;`,
+      [updateData, article_id]
+    )
+    .then((data) => {
+      if (data.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "invalid article id" });
+      }
+      return data.rows[0];
+    });
+};

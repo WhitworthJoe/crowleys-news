@@ -3,7 +3,7 @@ const {
   selectEndpoints,
   selectArticleById,
   selectCommentsByArticleId,
-  selectArticles, insertCommentByArticleId,
+  selectArticles, updateArticleById, insertCommentByArticleId,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -40,6 +40,15 @@ exports.getArticlesById = (req, res, next) => {
     .catch(next);
 };
 
+exports.patchArticlesById = (req, res, next) => {
+  const {article_id} = req.params;
+  const {inc_votes} = req.body;
+  updateArticleById(article_id, inc_votes)
+  .then((updatedArticle) => {
+    res.status(200).send(updatedArticle)
+  })
+  .catch(next)
+}
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const commentPromises = [selectCommentsByArticleId(article_id)];
