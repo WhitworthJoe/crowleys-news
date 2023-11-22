@@ -3,7 +3,7 @@ const {
   selectEndpoints,
   selectArticleById,
   selectCommentsByArticleId,
-  selectArticles, updateArticleById, insertCommentByArticleId,
+  selectArticles, updateArticleById, insertCommentByArticleId, removeCommentByCommentId,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -72,3 +72,12 @@ exports.postCommentByArticleId = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.deleteCommentByCommentId = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeCommentByCommentId(comment_id)
+  .then(() => {
+    res.status(204).send()
+  })
+  .catch(next)
+}
