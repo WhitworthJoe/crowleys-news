@@ -72,7 +72,7 @@ exports.updateArticleById = (article_id, updateData) => {
     )
     .then((data) => {
       if (data.rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "invalid article id" });
+        return Promise.reject({ status: 404, msg: "article does not exist" });
       }
       return data.rows[0];
     });

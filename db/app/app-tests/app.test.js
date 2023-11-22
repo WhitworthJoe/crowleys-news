@@ -321,7 +321,16 @@ describe('PATCH /api/articles/:article_id', () => {
     .send({inc_votes: 500})
     .expect(404)
     .then(({body})=> {
-      expect(body.msg).toBe("invalid article id")
+      expect(body.msg).toBe("article does not exist")
+    })
+  });
+  test('400: returns error for invalid article id ', () => {
+    return request(app)
+    .patch(`/api/articles/notanumber`)
+    .send({inc_votes: 666})
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe("Bad request")
     })
   });
 });
