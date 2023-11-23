@@ -31,7 +31,7 @@ exports.selectArticleById = (article_id) => {
       if (data.rows.length === 0) {
         return Promise.reject({ status: 404, msg: "invalid article id" });
       }
-      return data.rows;
+      return data.rows[0];
     });
 };
 

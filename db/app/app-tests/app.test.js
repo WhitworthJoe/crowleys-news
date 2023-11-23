@@ -57,7 +57,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toEqual([
+        expect(body).toMatchObject(
           {
             article_id: 1,
             title: "Living in the shadow of a great man",
@@ -67,13 +67,9 @@ describe("GET /api/articles/:article_id", () => {
             created_at: expect.any(String),
             votes: 100,
             article_img_url:
-              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-            comment_count: 11
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
           },
-        ]);
-        expect(body[0].comment_count).toBeDefined()
-        expect(typeof body[0].comment_count).toBe("number")
-
+        );
       });
   });
   test("404: returns error for valid article id but does NOT exist", () => {
@@ -91,6 +87,27 @@ describe("GET /api/articles/:article_id", () => {
       .then(({ body }) => {
         expect(body.msg).toEqual("Bad request");
       });
+  });
+  test('200: Should return article data for specified article id and include a count of comments relating to the article', () => {
+    return request(app)
+    .get("/api/articles/1")
+    .expect(200)
+    .then(({body})=> {
+      expect(body).toMatchObject({
+        article_id: 1,
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+        created_at: expect.any(String),
+        votes: 100,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        comment_count: 11
+      })
+      expect(body.comment_count).toBeDefined()
+      expect(typeof body.comment_count).toBe("number")
+    })
   });
 });
 
