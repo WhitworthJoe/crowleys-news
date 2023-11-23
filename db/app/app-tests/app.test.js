@@ -402,4 +402,21 @@ describe("GET /api/articles?topic=topic", () => {
       expect(body.msg).toBe("topic does not exist")
     })
   });
+  test.only('400: returns error if topic does not exist', () => {
+    return request(app)
+    .get('/api/articles?topic=crowley')
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("topic does not exist")
+    })
+  });
+  test.only('200: Should return an empty array due to there being no articles under the topic', () => {
+    return request(app)
+    .get('/api/articles?topic=paper')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body).toHaveLength(0);
+      expect(body).toEqual([])
+    });
+  });
 });
