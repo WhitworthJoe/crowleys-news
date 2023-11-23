@@ -2,7 +2,13 @@
 
 ## Overview
 
-Crowley's News is a web application that 
+Crowley's News is a dynamic web application designed to deliver news articles with a focus on community interaction. Users can explore a variety of articles, each categorised under different topics, ensuring a diverse and engaging reading experience.
+
+Key Features:
+
+* **Topic Navigation**: Easily navigate through articles based on topics, from technology to lifestyle.
+* **User Authentication**: Ensure users are in the database in order to contribute through comments and votes.
+* **Community Interation**: Engage with other users through comments and voting, fostering a sense of community around shared interests.
 
 ### Live Demo https://crowleysnewsapi.onrender.com/api/
 
@@ -28,11 +34,14 @@ Navigate to the project directory:
 ```
 cd crowleys-news
 ```
+Install dependencies
+```
+npm install
+```
 
-To use this repo you will need to run 'npm install' and create two .env files - '.env.test' and '.env.development' - within your project!
-You can do this in your command line with 'touch .env.test' and 'touch .env.development'.
+## Environment
 
-In your .env files make sure to add the relevent PGDATABASE, as per below:
+You will need to create the following '.env' files in the project root, with their respective variables:
 
 .env.development file:
 ```
@@ -42,4 +51,15 @@ PGDATABASE=nc_news
 .env.test file:
 ```
 PGDATABASE=nc_news_test
+```
+
+.env.production
+```
+DATABASE_URL=your_database_URL
+```
+
+## Running Tests
+Run tests using the following command:
+```
+npm run test
 ```
