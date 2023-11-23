@@ -110,3 +110,23 @@ exports.selectArticlesByTopic = (topic) => {
         })
     });
 };
+
+exports.selectArticlesSortOrder = (sort_by, order, validSorts, validOrders) => {
+  if (!validSorts.includes(sort_by) || !validOrders.includes(order)) {
+    return Promise.reject({status:400, msg:"invalid search parameter"})
+  }
+  return db.query(`SELECT * FROM articles ORDER BY ${sort_by} ${order}`)
+  .then((sortedOrderedData) => {
+    return sortedOrderedData.rows
+  })
+}
+
+exports.selectArticlesSort = (sort_by, validSorts) => {
+  if (!validSorts.includes(sort_by)) {
+    return Promise.reject({status:400, msg:"invalid search parameter"})
+  }
+  return db.query(`SELECT * FROM articles ORDER BY ${sort_by} DESC`)
+  .then((sortedData) => {
+    return sortedData.rows
+  })
+}

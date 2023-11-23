@@ -9,6 +9,9 @@ const {
   removeCommentByCommentId,
   selectUsers,
   selectArticlesByTopic,
+  selectArticlesOrder,
+  selectArticlesSortOrder,
+  selectArticlesSort,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -29,16 +32,37 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { topic } = req.query;
-  if (req.query.hasOwnProperty('topic')) {
+  const { topic, sort_by, order } = req.query;
+  const validSorts = ["title", "topic", "author", "created_at", "votes"];
+  const validOrders = ["asc", "desc"];
+
+  if (req.query.hasOwnProperty("topic")) {
     selectArticlesByTopic(topic)
-      .then((articles) => {
-        res.status(200).send(articles);
+      .then((TopicArticles) => {
+        res.status(200).send(TopicArticles);
       })
       .catch(next);
+  } else if (
+    req.query.hasOwnProperty("sort_by") &&
+    req.query.hasOwnProperty("order")
+  ) {
+    selectArticlesSortOrder(sort_by, order, validSorts, validOrders)
+      .then((sortedOrderedArticles) => {
+        res.status(200).send(sortedOrderedArticles);
+      })
+      .catch(next);
+  } else if (req.query.hasOwnProperty("sort_by")) {
+    selectArticlesSort(sort_by, validSorts)
+      .then((sortedArticles) => {
+        res.status(200).send(sortedArticles);
+      })
+      .catch(next);
+  }  else if (req.query.hasOwnProperty('order') && !req.query.hasOwnProperty('sort_by')) {
+    res.status(400).json({ msg: "invalid search parameter" });
   } else {
     selectArticles()
       .then((articles) => {
+        console.log(articles);
         res.status(200).send(articles);
       })
       .catch(next);
