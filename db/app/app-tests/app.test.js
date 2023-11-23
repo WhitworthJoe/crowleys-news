@@ -370,7 +370,6 @@ describe("GET /api/articles?topic=topic", () => {
       .get("/api/articles?topic=cats")
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
         const articles = body;
         expect(articles).toBeDefined();
         expect(articles).toHaveLength(1);
@@ -386,5 +385,21 @@ describe("GET /api/articles?topic=topic", () => {
           votes: 0,
         });
       });
+  });
+  test('400: returns error if topic does not exist', () => {
+    return request(app)
+    .get('/api/articles?topic=crowley')
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("topic does not exist")
+    })
+  });
+  test('400: returns error if topic is ommitted', () => {
+    return request(app)
+    .get('/api/articles?topic=')
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("topic does not exist")
+    })
   });
 });

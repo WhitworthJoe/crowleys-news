@@ -97,6 +97,9 @@ exports.removeCommentByCommentId = (comment_id) => {
 exports.selectArticlesByTopic = (topic) => {
   return db.query(`SELECT * FROM articles WHERE topic = $1;`, [topic])
   .then((data) => {
+    if (data.rows.length === 0) {
+      return Promise.reject({status: 400, msg: "topic does not exist"})
+    }
     return data.rows
   })
 }

@@ -29,8 +29,9 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
+  console.log(req.query)
   const { topic } = req.query;
-  if (topic) {
+  if (req.query.hasOwnProperty('topic')) {
     selectArticlesByTopic(topic)
       .then((articles) => {
         res.status(200).send(articles);
