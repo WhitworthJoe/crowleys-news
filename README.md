@@ -23,7 +23,7 @@ Make sure you have the following installed on your machine:
 * [Node.js](https://nodejs.org/en) (Minimum version: 14.0.0)
 * [PostgreSQL](https://www.postgresql.org/) (Minimum version: 12.0)
 
-## Installing
+### Installing
 
 Clone the repository to your local machine:
 
@@ -49,7 +49,7 @@ npm install pg;
 npm install supertest;
 ```
 
-## Environment
+### Environment
 
 You will need to create the following '.env' files in the project root, with their respective variables:
 
@@ -68,7 +68,17 @@ PGDATABASE=nc_news_test
 DATABASE_URL=your_database_URL
 ```
 
-## Running Tests
+### Seeding
+Seed local database using the following command:
+```
+npm run seed
+```
+Seed your online database using the following command:
+```
+npm run seed-prod
+```
+
+### Running Tests
 Run tests using the following command:
 ```
 npm run test
