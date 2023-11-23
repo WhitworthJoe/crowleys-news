@@ -68,8 +68,12 @@ describe("GET /api/articles/:article_id", () => {
             votes: 100,
             article_img_url:
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            comment_count: 11
           },
         ]);
+        expect(body[0].comment_count).toBeDefined()
+        expect(typeof body[0].comment_count).toBe("number")
+
       });
   });
   test("404: returns error for valid article id but does NOT exist", () => {
