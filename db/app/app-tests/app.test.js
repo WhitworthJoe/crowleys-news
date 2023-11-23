@@ -97,7 +97,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body).toHaveLength(13);
-        expect(body).toBeSortedBy("created_at", { coerce: true });
+        expect(body).toBeSortedBy("created_at", {descending: true});
         body.forEach((article) => {
           expect(article).toMatchObject({
             author: expect.any(String),
@@ -402,7 +402,7 @@ describe("GET /api/articles?topic=topic", () => {
       expect(body.msg).toBe("topic does not exist")
     })
   });
-  test.only('400: returns error if topic does not exist', () => {
+  test('400: returns error if topic does not exist', () => {
     return request(app)
     .get('/api/articles?topic=crowley')
     .expect(400)
@@ -410,7 +410,7 @@ describe("GET /api/articles?topic=topic", () => {
       expect(body.msg).toBe("topic does not exist")
     })
   });
-  test.only('200: Should return an empty array due to there being no articles under the topic', () => {
+  test('200: Should return an empty array due to there being no articles under the topic', () => {
     return request(app)
     .get('/api/articles?topic=paper')
     .expect(200)
