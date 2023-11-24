@@ -1,8 +1,6 @@
 const { nextTick } = require("process");
 const db = require("../../db/connection");
 const fs = require("fs/promises");
-const { promiseHooks } = require("v8");
-const { isNumberObject } = require("util/types");
 
 exports.selectEndpoints = () => {
   return fs
@@ -19,35 +17,12 @@ exports.selectTopics = () => {
   });
 };
 
-exports.insertTopic = ({ slug, description }) => {
-  if (!slug || !description) {
-    return Promise.reject({
-      status: 400,
-      msg: "bad request. Missing required information",
-    });
-  }
-  if (typeof slug !== 'string' || typeof description !== 'string'){
-    return Promise.reject({
-      status: 400,
-      msg: "bad request. Invalid character type"
-    })
-  }
-  return db
-    .query(
-      `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING *;`,
-      [slug, description]
-    )
-    .then((insertedTopic) => {
-      return insertedTopic.rows[0];
-    });
-};
-
 exports.selectArticles = (page = 1, limit = 10) => {
   const offset = (page - 1) * limit;
   const query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC LIMIT $1 OFFSET $2;`;
   return db.query(query, [limit, offset]).then((data) => {
     if (data.rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "page doesn't exist" });
+      return Promise.reject({status: 404, msg: "page doesn't exist"})
     }
     return data.rows;
   });
