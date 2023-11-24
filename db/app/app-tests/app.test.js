@@ -321,7 +321,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/124124/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toEqual("No comments for this article");
+        expect(body.msg).toEqual("this article does not exist yet");
       });
   });
   test("400: returns error for invalid article_id", () => {
@@ -831,10 +831,10 @@ describe("GET /api/articles/:article_id/comments?page=page&limit=limit", () => {
   });
   test("404: return error for pages out-of-range", () => {
     return request(app)
-      .get("/api/articles/100/comments?page=100&limit=10")
+      .get("/api/articles/10/comments?page=100&limit=10")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No comments for this article");
+        expect(body.msg).toBe("No comments found on this page");
       });
   });
   test("400: return error for invalid page parameters", () => {
@@ -843,6 +843,22 @@ describe("GET /api/articles/:article_id/comments?page=page&limit=limit", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("page doesn't exist");
+      });
+  });
+  test("404: return error for valid article_id but not in data", () => {
+    return request(app)
+      .get("/api/articles/100/comments?page=1&limit=10")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("this article does not exist yet");
+      });
+  });
+  test("400: return error for invalid article_id character type", () => {
+    return request(app)
+      .get("/api/articles/one/comments?page=1&limit=10")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });

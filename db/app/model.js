@@ -101,9 +101,12 @@ exports.selectCommentsByArticleId = (article_id, page = 1, limit = 10) => {
       [article_id, limit, offset]
     )
     .then(({ rows }) => {
+      if (rows.length === 0 && page > 1) {
+        return Promise.reject({status:404, msg:"No comments found on this page"})
+      }
       return rows;
     });
-};
+}; // need to add some code for 1. if article_id doesn't exist and 2. if pages out-of-range
 
 exports.insertCommentByArticleId = (article_id, newComment) => {
   const { username, body } = newComment;
