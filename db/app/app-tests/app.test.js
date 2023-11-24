@@ -846,3 +846,70 @@ describe("GET /api/articles/:article_id/comments?page=page&limit=limit", () => {
       });
   });
 });
+
+describe("POST /api/topics", () => {
+  test("201: Should add new topic object with a topic name and description", () => {
+    const newTopic = {
+      slug: "biscuits",
+      description:
+        "Discussion of biscuits only, no one mention jaffa cakes, we aren't getting in to that right now",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        const { postedTopic } = body;
+        expect(postedTopic).toMatchObject({
+          slug: "biscuits",
+          description:
+            "Discussion of biscuits only, no one mention jaffa cakes, we aren't getting in to that right now",
+        });
+      });
+  });
+  test("201: Should add new topic ignoring unnecessary properties", () => {
+    const newTopic = {
+      slug: "biscuits",
+      description:
+        "Discussion of biscuits only, no one mention jaffa cakes, we aren't getting in to that right now",
+      rules: "NO TALKING ABOUT JAFFA CAKES I WONT SAY IT AGAIN",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        const { postedTopic } = body;
+        expect(postedTopic).toMatchObject({
+          slug: "biscuits",
+          description:
+            "Discussion of biscuits only, no one mention jaffa cakes, we aren't getting in to that right now",
+        });
+      });
+  });
+  test("400: returns error if slug or description is missing in the request", () => {
+    const newTopic = {
+      slug: "cheese",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request. Missing required information");
+      });
+  });
+  test("400: returns error if invalid character type given for slug or description", () => {
+    const newTopic = {
+      slug: 123,
+      description: "numbers!",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request. Invalid character type");
+      });
+  });
+});

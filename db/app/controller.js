@@ -15,6 +15,7 @@ const {
   selectUserByUsername,
   updatesCommentByCommentId,
   insertArticle,
+  insertTopic,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -30,6 +31,15 @@ exports.getTopics = (req, res, next) => {
   selectTopics()
     .then((rows) => {
       res.status(200).send({ topics: rows });
+    })
+    .catch(next);
+};
+
+exports.postTopic = (req, res, next) => {
+  const { slug, description } = req.body;
+  insertTopic({ slug, description })
+    .then((insertedTopic) => {
+      res.status(201).send({ postedTopic: insertedTopic });
     })
     .catch(next);
 };

@@ -1,4 +1,3 @@
-const { nextTick } = require("process");
 const db = require("../../db/connection");
 const fs = require("fs/promises");
 
@@ -15,6 +14,29 @@ exports.selectTopics = () => {
   return db.query("SELECT * FROM topics;").then((data) => {
     return data.rows;
   });
+};
+
+exports.insertTopic = ({ slug, description }) => {
+  if (!slug || !description) {
+    return Promise.reject({
+      status: 400,
+      msg: "bad request. Missing required information",
+    });
+  }
+  if (typeof slug !== "string" || typeof description !== "string") {
+    return Promise.reject({
+      status: 400,
+      msg: "bad request. Invalid character type",
+    });
+  }
+  return db
+    .query(
+      `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING *;`,
+      [slug, description]
+    )
+    .then((insertedTopic) => {
+      return insertedTopic.rows[0];
+    });
 };
 
 exports.selectArticles = (page = 1, limit = 10) => {
