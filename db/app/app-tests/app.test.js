@@ -155,6 +155,136 @@ describe("GET /api/articles", () => {
   });
 });
 
+describe("POST /api/articles", () => {
+  test("201: Should add new and return a new article to the database", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "I am a cat.",
+      body: "Since my last article I have in fact, in all forms except physical, become a cat.",
+      topic: "cats",
+      article_img_url:
+        "https://akm-img-a-in.tosshub.com/indiatoday/images/story/201601/cat---facebook-and-storysize_647_011416045855.jpg?VersionId=KAuIu37rc1PK1216UEQ0naVgpgHaM5kb&size=690:388",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { postedArticle } = body;
+        expect(postedArticle).toMatchObject({
+          article_id: 14,
+          author: "icellusedkars",
+          title: "I am a cat.",
+          body: "Since my last article I have in fact, in all forms except physical, become a cat.",
+          topic: "cats",
+          created_at: expect.any(String),
+          votes: 0,
+          article_img_url:
+            "https://akm-img-a-in.tosshub.com/indiatoday/images/story/201601/cat---facebook-and-storysize_647_011416045855.jpg?VersionId=KAuIu37rc1PK1216UEQ0naVgpgHaM5kb&size=690:388",
+          comment_count: 0,
+        });
+      });
+  });
+  test("201: Should add new and return a new article to the database with defaulted article_img_url", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "I am a cat.",
+      body: "Since my last article I have in fact, in all forms except physical, become a cat.",
+      topic: "cats",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { postedArticle } = body;
+        expect(postedArticle).toMatchObject({
+          article_id: 14,
+          author: "icellusedkars",
+          title: "I am a cat.",
+          body: "Since my last article I have in fact, in all forms except physical, become a cat.",
+          topic: "cats",
+          created_at: expect.any(String),
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 0,
+        });
+      });
+  });
+  test("201: Should add new article and return it, ignoring unnecessary properties", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "I am a cat.",
+      body: "Since my last article I have in fact, in all forms except physical, become a cat.",
+      topic: "cats",
+      favouriteCat: "Crowley"
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { postedArticle } = body;
+        expect(postedArticle).toMatchObject({
+          article_id: 14,
+          author: "icellusedkars",
+          title: "I am a cat.",
+          body: "Since my last article I have in fact, in all forms except physical, become a cat.",
+          topic: "cats",
+          created_at: expect.any(String),
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 0,
+        });
+      });
+  });
+  test('400: returns error if any required properties are missing in the request', () => {
+    const newArticle = {
+      author: "icellusedkars",
+      body: "Oh wait, I forgot to add a title!!"
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("bad request. Missing required information")
+    })
+  });
+  test('404: returns error if topic does not exist within database', () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "I cant stand them dogs since becoming a cat",
+      body: "Do dogs even have thoughts in their heads? Not like us cats!",
+      topic: "dogs"
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("topic does not exist")
+    })
+  });
+  test('404: returns error if author username does not exist within database', () => {
+    const newArticle = {
+      author: "itzCrowley",
+      title: "Yo its me, ya boy",
+      body: "Im just coming here to say Hi, I havent even made an account yet, isn't it cool I can still post!",
+      topic: "cats"
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("username not found")
+    })
+  });
+});
+
 describe("GET /api/articles/:article_id/comments", () => {
   test("200: should return a sorted array of all comments for specified article via the article_id, with the most recent first", () => {
     return request(app)
@@ -396,23 +526,23 @@ describe("PATCH /api/comments/:comment_id", () => {
         });
       });
   });
-  test('400: return an error for invalid inc_votes character type (expects Numbers, not String)', () => {
+  test("400: return an error for invalid inc_votes character type (expects Numbers, not String)", () => {
     return request(app)
-    .patch(`/api/comments/1`)
-    .send({inc_votes: 'fifty'})
-    .expect(400)
-    .then(({body}) => {
-      expect(body.msg).toBe("Bad request")
-    })
+      .patch(`/api/comments/1`)
+      .send({ inc_votes: "fifty" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
   });
-  test('404: returns error for a valid comment ID but does not exist)', () => {
+  test("404: returns error for a valid comment ID but does not exist)", () => {
     return request(app)
-    .patch(`/api/comments/666`)
-    .send({inc_votes: 666})
-    .expect(404)
-    .then(({body}) => {
-      expect(body.msg).toBe("comment not found")
-    })
+      .patch(`/api/comments/666`)
+      .send({ inc_votes: 666 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment not found");
+      });
   });
 });
 
