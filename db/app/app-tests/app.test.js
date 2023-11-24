@@ -462,3 +462,53 @@ describe("GET /api/articles?topic=topic", () => {
     });
   });
 });
+describe('GET /api/articles?sort_by=created_at&order=desc', () => {
+  test('200: Should return an array of articles sorted as specified, in default DESC order', () => {
+    return request(app)
+    .get('/api/articles?sort_by=created_at')
+    .expect(200)
+    .then(({body})=>{
+      expect(body).toBeSortedBy("created_at", {descending: true})
+    })
+  });
+  test('200: Should return an array of articles sorted and in ascending order as specified', () => {
+    return request(app)
+    .get('/api/articles?sort_by=title&order=asc')
+    .expect(200)
+    .then(({body})=>{
+      expect(body).toBeSortedBy("title", {descending: false})
+    })
+  });
+  test('400: Should return an error if sent an invalid sort_by parameter', () => {
+    return request(app)
+    .get('/api/articles?sort_by=notValidSort')
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("invalid search parameter")
+    })
+  });
+  test('400: Should return an error if sent an invalid order parameter', () => {
+    return request(app)
+    .get('/api/articles?sort_by=title&order=upsideDown')
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("invalid search parameter")
+    })
+  });
+  test('400: Should return an error if sent an invalid sort_by AND order parameter', () => {
+    return request(app)
+    .get('/api/articles?sort_by=notValidSort&order=upsideDown')
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("invalid search parameter")
+    })
+  });
+  test('400: Should return an error if sent an invalid sort_by AND order parameter', () => {
+    return request(app)
+    .get('/api/articles?order=upsideDown')
+    .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe("invalid search parameter")
+    })
+  });
+});
