@@ -71,11 +71,12 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectCommentsByArticleId = (article_id) => {
+exports.selectCommentsByArticleId = (article_id, page = 1, limit = 10) => {
+  const offset = (page - 1) * limit;
   return db
     .query(
-      `SELECT comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;`,
-      [article_id]
+      `SELECT comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id WHERE comments.article_id = $1 ORDER BY comments.created_at DESC LIMIT $2 OFFSET $3;`,
+      [article_id, limit, offset]
     )
     .then(({ rows }) => {
       return rows;
