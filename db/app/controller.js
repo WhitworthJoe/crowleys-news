@@ -14,6 +14,7 @@ const {
   selectArticlesSort,
   selectUserByUsername,
   updatesCommentByCommentId,
+  insertArticle,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -72,6 +73,18 @@ exports.getArticles = (req, res, next) => {
       .catch(next);
   }
 };
+
+exports.postArticle = (req, res, next) => {
+  const { author, title, body, topic, article_img_url } = req.body
+  selectUserByUsername(author)
+  .then(() => {
+    return insertArticle({author, title, body, topic, article_img_url})
+  })
+  .then((insertedArticle) => {
+    res.status(201).send({postedArticle: insertedArticle})
+  })
+  .catch(next)
+}
 
 exports.getArticlesById = (req, res, next) => {
   const { article_id } = req.params;

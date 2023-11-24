@@ -24,6 +24,33 @@ exports.selectArticles = () => {
   });
 };
 
+exports.insertArticle = ({author, title, body, topic, article_img_url}) => {
+  if (!author || !title || !body || !topic) {
+    return Promise.reject({status:400, msg: "bad request. Missing required information"})
+  }
+  const default_img_url =
+    "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700";
+  const image_url = article_img_url || default_img_url;
+  return db
+    .query(
+      `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
+      [author, title, body, topic, image_url]
+    )
+    .then((data) => {
+      const insertedArticle = data.rows[0];
+      return db
+        .query(
+          "SELECT COUNT(comment_id)::INT AS comment_count FROM comments WHERE article_id = $1",
+          [insertedArticle.article_id]
+        )
+        .then((CountData) => {
+          const commentCount = CountData.rows[0].comment_count;
+          return { ...insertedArticle, comment_count: commentCount };
+        });
+        
+    })
+};
+
 exports.selectArticleById = (article_id) => {
   return db
     .query(
@@ -149,11 +176,15 @@ exports.selectUserByUsername = (username) => {
 };
 
 exports.updatesCommentByCommentId = (comment_id, inc_votes) => {
-  return db.query(`UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;`, [inc_votes, comment_id])
-  .then((updatedCommment) => {
-    if (updatedCommment.rows.length === 0){
-      return Promise.reject({status:404, msg: "comment not found"})
-    }
-    return updatedCommment.rows[0]
-  })
-}
+  return db
+    .query(
+      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;`,
+      [inc_votes, comment_id]
+    )
+    .then((updatedCommment) => {
+      if (updatedCommment.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "comment not found" });
+      }
+      return updatedCommment.rows[0];
+    });
+};

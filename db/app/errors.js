@@ -5,7 +5,9 @@ exports.handlePsqlErrors = (err, req, res, next) => {
     return res.status(404).send({ msg: "username does not exist"})
   } else if (err.constraint === "comments_article_id_fkey") {
     return res.status(400).send({ msg: "article does not exist"})
-  }  else next(err);
+  } else if (err.constraint === "articles_topic_fkey") {
+    return res.status(404).send({msg: "topic does not exist"})
+  } else next(err);
 };
 
 exports.handleCustomErrors = (err, req, res, next) => {

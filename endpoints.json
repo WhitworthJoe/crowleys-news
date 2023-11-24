@@ -27,6 +27,28 @@
       ]
     }
   },
+  "POST /api/articles": {
+    "description": "Posts a new article to the article database",
+    "requestBodyAccepts": "author, title, body, topic, article_img_url(DEFAULT IF NOT PROVIDED)",
+    "exampleRequest": {
+      "author": "icellusedkars",
+      "title": "I am a cat.",
+      "body": "Since my last article I have in fact, in all forms except physical, become a cat.",
+      "topic": "cats",
+      "article_img_url": "https://akm-img-a-in.tosshub.com/indiatoday/images/story/201601/cat---facebook-and-storysize_647_011416045855.jpg?VersionId=KAuIu37rc1PK1216UEQ0naVgpgHaM5kb&size=690:388"
+    },
+    "exampleResponse": {
+      "article_id": "14",
+      "author": "icellusedkars",
+      "title": "I am a cat.",
+      "body": "Since my last article I have in fact, in all forms except physical, become a cat.",
+      "topic": "cats",
+      "created_at": "expect.any(String)",
+      "votes": "0",
+      "article_img_url": "https://akm-img-a-in.tosshub.com/indiatoday/images/story/201601/cat---facebook-and-storysize_647_011416045855.jpg?VersionId=KAuIu37rc1PK1216UEQ0naVgpgHaM5kb&size=690:388",
+      "comment_count": "0"
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves an array with specified artical via article_id",
     "exampleResponse": {
