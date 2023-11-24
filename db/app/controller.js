@@ -15,6 +15,7 @@ const {
   selectUserByUsername,
   updatesCommentByCommentId,
   insertArticle,
+  insertTopic,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -30,6 +31,15 @@ exports.getTopics = (req, res, next) => {
   selectTopics()
     .then((rows) => {
       res.status(200).send({ topics: rows });
+    })
+    .catch(next);
+};
+
+exports.postTopic = (req, res, next) => {
+  const { slug, description } = req.body;
+  insertTopic({slug, description})
+    .then((insertedTopic) => {
+      res.status(201).send({ postedTopic: insertedTopic });
     })
     .catch(next);
 };
@@ -110,23 +120,24 @@ exports.patchArticlesById = (req, res, next) => {
 };
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  const { page, limit } = req.query
+  const { page, limit } = req.query;
   if ((page && isNaN(page)) || page < 1) {
     return res.status(400).send({ msg: "page doesn't exist" });
   } else {
-    const commentPromises = [selectCommentsByArticleId(article_id, page, limit)];
+    const commentPromises = [
+      selectCommentsByArticleId(article_id, page, limit),
+    ];
 
-  if (article_id) {
-    commentPromises.push(checkExists("articles", "article_id", article_id));
+    if (article_id) {
+      commentPromises.push(checkExists("articles", "article_id", article_id));
+    }
+    Promise.all(commentPromises)
+      .then((resolvedPromises) => {
+        const comments = resolvedPromises[0];
+        res.status(200).send({ comments });
+      })
+      .catch(next);
   }
-  Promise.all(commentPromises)
-    .then((resolvedPromises) => {
-      const comments = resolvedPromises[0];
-      res.status(200).send({ comments });
-    })
-    .catch(next);
-  }
-  
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
