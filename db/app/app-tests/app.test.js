@@ -503,12 +503,11 @@ describe('GET /api/articles?sort_by=created_at&order=desc', () => {
       expect(body.msg).toBe("invalid search parameter")
     })
   });
-  test.only('400: Should return an error if sent an invalid sort_by AND order parameter', () => {
+  test('400: Should return an error if sent an invalid sort_by AND order parameter', () => {
     return request(app)
     .get('/api/articles?order=upsideDown')
     .expect(400)
     .then((response) => {
-      console.log(response.body)
       expect(response.body.msg).toBe("invalid search parameter")
     })
   });

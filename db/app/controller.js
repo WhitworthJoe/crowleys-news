@@ -9,7 +9,6 @@ const {
   removeCommentByCommentId,
   selectUsers,
   selectArticlesByTopic,
-  selectArticlesOrder,
   selectArticlesSortOrder,
   selectArticlesSort,
 } = require("./model");
@@ -62,7 +61,6 @@ exports.getArticles = (req, res, next) => {
   } else {
     selectArticles()
       .then((articles) => {
-        console.log(articles);
         res.status(200).send(articles);
       })
       .catch(next);
