@@ -902,7 +902,7 @@ describe("POST /api/topics", () => {
   test("400: returns error if invalid character type given for slug or description", () => {
     const newTopic = {
       slug: 123,
-      description: "numbers!"
+      description: "numbers!",
     };
     return request(app)
       .post("/api/topics")

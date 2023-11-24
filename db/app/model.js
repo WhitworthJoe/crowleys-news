@@ -1,8 +1,5 @@
-const { nextTick } = require("process");
 const db = require("../../db/connection");
 const fs = require("fs/promises");
-const { promiseHooks } = require("v8");
-const { isNumberObject } = require("util/types");
 
 exports.selectEndpoints = () => {
   return fs
@@ -26,11 +23,11 @@ exports.insertTopic = ({ slug, description }) => {
       msg: "bad request. Missing required information",
     });
   }
-  if (typeof slug !== 'string' || typeof description !== 'string'){
+  if (typeof slug !== "string" || typeof description !== "string") {
     return Promise.reject({
       status: 400,
-      msg: "bad request. Invalid character type"
-    })
+      msg: "bad request. Invalid character type",
+    });
   }
   return db
     .query(
