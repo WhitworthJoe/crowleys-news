@@ -71,10 +71,10 @@
       "article_id": "1"
     }
   },
-  "Patch /api/articles/:article_id": {
+  "PATCH /api/articles/:article_id": {
     "description": "Posts a new comment to an article specified via article_id param",
     "requestBodyAccepts": "{ inc_votes: newVote } where newVote = votes to incrememnt by",
-    "exampleRequest": "{ inv_votes: 150 }",
+    "exampleRequest": "{ inc_votes: 150 }",
     "exampleResponse": {
       "article_id": "1",
       "title": "Living in the shadow of a great man",
@@ -84,6 +84,19 @@
       "created_at": "expect.any(String)",
       "votes": "250",
       "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    }
+  },
+  "PATCH /api/comments/:comments_id": {
+    "description": "Updates votes on a comment specified by comment_id",
+    "requestBodyAccepts": "{ inc_votes: newVote } where newVote = votes to incrememnt by",
+    "exampleRequest": "{ inc_votes: 150 }",
+    "exampleResponse": {
+      "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      "votes": "682",
+      "author": "butter_bridge",
+      "article_id": "9",
+      "created_at": "expect.any(String)",
+      "comment_id": "1"
     }
   },
   "DELETE /api/comments/:comment_id": {

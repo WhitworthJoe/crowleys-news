@@ -86,6 +86,7 @@ exports.updateArticleById = (article_id, updateData) => {
       return data.rows[0];
     });
 };
+
 exports.removeCommentByCommentId = (comment_id) => {
   return db
     .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [
@@ -146,3 +147,13 @@ exports.selectUserByUsername = (username) => {
       return users.rows[0];
     });
 };
+
+exports.updatesCommentByCommentId = (comment_id, inc_votes) => {
+  return db.query(`UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;`, [inc_votes, comment_id])
+  .then((updatedCommment) => {
+    if (updatedCommment.rows.length === 0){
+      return Promise.reject({status:404, msg: "comment not found"})
+    }
+    return updatedCommment.rows[0]
+  })
+}

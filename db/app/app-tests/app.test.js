@@ -343,7 +343,7 @@ describe("PATCH /api/articles/:article_id", () => {
         });
       });
   });
-  test("400: returns error for an invalid patch article ID character type (expects Numbers, not String)", () => {
+  test("400: returns error for an invalid patch inc_votes character type (expects Numbers, not String)", () => {
     return request(app)
       .patch(`/api/articles/1`)
       .send({ inc_votes: "fifty" })
@@ -360,6 +360,59 @@ describe("PATCH /api/articles/:article_id", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("invalid article id");
       });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: updates the existing votes property with positive votes on the comment specified by comment id", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 666 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 682,
+          author: "butter_bridge",
+          article_id: 9,
+          created_at: expect.any(String),
+          comment_id: 1,
+        });
+      });
+  });
+  test("200: updates the existing votes property with negative votes on the comment specified by comment id", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: -666 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: -650,
+          author: "butter_bridge",
+          article_id: 9,
+          created_at: expect.any(String),
+          comment_id: 1,
+        });
+      });
+  });
+  test('400: return an error for invalid inc_votes character type (expects Numbers, not String)', () => {
+    return request(app)
+    .patch(`/api/comments/1`)
+    .send({inc_votes: 'fifty'})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request")
+    })
+  });
+  test('404: returns error for a valid comment ID but does not exist)', () => {
+    return request(app)
+    .patch(`/api/comments/666`)
+    .send({inc_votes: 666})
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("comment not found")
+    })
   });
 });
 
@@ -417,9 +470,9 @@ describe("get /api/users/:username", () => {
           avatar_url:
             "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
         });
-        expect(users).toHaveProperty('username')
-        expect(users).toHaveProperty('avatar_url')
-        expect(users).toHaveProperty('name')
+        expect(users).toHaveProperty("username");
+        expect(users).toHaveProperty("avatar_url");
+        expect(users).toHaveProperty("name");
       });
   });
   test("404: returns an error if username is not found", () => {
