@@ -587,7 +587,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/users/:username", () => {
+describe("get /api/users/:username", () => {
   test("200: Should return user details specified by username", () => {
     return request(app)
       .get("/api/users/icellusedkars")
@@ -815,7 +815,7 @@ describe("GET /api/articles/:article_id/comments?page=page&limit=limit", () => {
       .get("/api/articles/1/comments?page=2&limit=10")
       .expect(200)
       .then(({ body }) => {
-        const { comments } = body;
+        const {comments} = body;
         expect(comments).toHaveLength(1);
         comments.forEach((comment) => {
           expect(comment).toMatchObject({

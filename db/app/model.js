@@ -44,7 +44,7 @@ exports.selectArticles = (page = 1, limit = 10) => {
   const query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC LIMIT $1 OFFSET $2;`;
   return db.query(query, [limit, offset]).then((data) => {
     if (data.rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "page doesn't exist" });
+      return Promise.reject({status: 404, msg: "page doesn't exist"})
     }
     return data.rows;
   });
