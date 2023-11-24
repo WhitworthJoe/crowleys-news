@@ -14,7 +14,6 @@ exports.selectEndpoints = () => {
 exports.selectTopics = () => {
   return db.query("SELECT * FROM topics;").then((data) => {
     return data.rows;
-    
   });
 };
 
@@ -27,7 +26,10 @@ exports.selectArticles = () => {
 
 exports.selectArticleById = (article_id) => {
   return db
-    .query(`SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.body, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id;`, [article_id])
+    .query(
+      `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.body, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id;`,
+      [article_id]
+    )
     .then((data) => {
       if (data.rows.length === 0) {
         return Promise.reject({ status: 404, msg: "invalid article id" });
@@ -107,27 +109,40 @@ exports.selectArticlesByTopic = (topic) => {
       return db
         .query(`SELECT * FROM articles WHERE topic = $1;`, [topic])
         .then((articleData) => {
-          return articleData.rows
-        })
+          return articleData.rows;
+        });
     });
 };
 
 exports.selectArticlesSortOrder = (sort_by, order, validSorts, validOrders) => {
   if (!validSorts.includes(sort_by) || !validOrders.includes(order)) {
-    return Promise.reject({status:400, msg:"invalid search parameter"})
+    return Promise.reject({ status: 400, msg: "invalid search parameter" });
   }
-  return db.query(`SELECT * FROM articles ORDER BY ${sort_by} ${order}`)
-  .then((sortedOrderedData) => {
-    return sortedOrderedData.rows
-  })
-}
+  return db
+    .query(`SELECT * FROM articles ORDER BY ${sort_by} ${order}`)
+    .then((sortedOrderedData) => {
+      return sortedOrderedData.rows;
+    });
+};
 
 exports.selectArticlesSort = (sort_by, validSorts) => {
   if (!validSorts.includes(sort_by)) {
-    return Promise.reject({status:400, msg:"invalid search parameter"})
+    return Promise.reject({ status: 400, msg: "invalid search parameter" });
   }
-  return db.query(`SELECT * FROM articles ORDER BY ${sort_by} DESC`)
-  .then((sortedData) => {
-    return sortedData.rows
-  })
-}
+  return db
+    .query(`SELECT * FROM articles ORDER BY ${sort_by} DESC`)
+    .then((sortedData) => {
+      return sortedData.rows;
+    });
+};
+
+exports.selectUserByUsername = (username) => {
+  return db
+    .query(`SELECT * FROM users WHERE username = $1`, [username])
+    .then((users) => {
+      if (users.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "username not found" });
+      }
+      return users.rows[0];
+    });
+};

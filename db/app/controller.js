@@ -12,6 +12,7 @@ const {
   selectArticlesByTopic,
   selectArticlesSortOrder,
   selectArticlesSort,
+  selectUserByUsername,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -57,7 +58,10 @@ exports.getArticles = (req, res, next) => {
         res.status(200).send(sortedArticles);
       })
       .catch(next);
-  }  else if (req.query.hasOwnProperty('order') && !req.query.hasOwnProperty('sort_by')) {
+  } else if (
+    req.query.hasOwnProperty("order") &&
+    !req.query.hasOwnProperty("sort_by")
+  ) {
     res.status(400).json({ msg: "invalid search parameter" });
   } else {
     selectArticles()
@@ -121,6 +125,15 @@ exports.deleteCommentByCommentId = (req, res, next) => {
   removeCommentByCommentId(comment_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch(next);
+};
+
+exports.getUserByUsername = (req, res, next) => {
+  const { username } = req.params;
+  selectUserByUsername(username)
+    .then((users) => {
+      res.status(200).send({ users: users });
     })
     .catch(next);
 };
