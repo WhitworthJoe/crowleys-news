@@ -39,8 +39,8 @@ exports.getArticles = (req, res, next) => {
   const validSorts = ["title", "topic", "author", "created_at", "votes"];
   const validOrders = ["asc", "desc"];
 
-  if (page && (isNaN(page)) || page < 1){
-    return res.status(400).send({msg: "page doesn't exist"})
+  if ((page && isNaN(page)) || page < 1) {
+    return res.status(400).send({ msg: "page doesn't exist" });
   }
 
   if (req.query.hasOwnProperty("topic")) {
@@ -79,16 +79,16 @@ exports.getArticles = (req, res, next) => {
 };
 
 exports.postArticle = (req, res, next) => {
-  const { author, title, body, topic, article_img_url } = req.body
+  const { author, title, body, topic, article_img_url } = req.body;
   selectUserByUsername(author)
-  .then(() => {
-    return insertArticle({author, title, body, topic, article_img_url})
-  })
-  .then((insertedArticle) => {
-    res.status(201).send({postedArticle: insertedArticle})
-  })
-  .catch(next)
-}
+    .then(() => {
+      return insertArticle({ author, title, body, topic, article_img_url });
+    })
+    .then((insertedArticle) => {
+      res.status(201).send({ postedArticle: insertedArticle });
+    })
+    .catch(next);
+};
 
 exports.getArticlesById = (req, res, next) => {
   const { article_id } = req.params;
@@ -110,7 +110,12 @@ exports.patchArticlesById = (req, res, next) => {
 };
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  const commentPromises = [selectCommentsByArticleId(article_id)];
+  const { page, limit } = req.query
+  if ((page && isNaN(page)) || page < 1) {
+    return res.status(400).send({ msg: "page doesn't exist" });
+  } else {
+    const commentPromises = [selectCommentsByArticleId(article_id, page, limit)];
+
   if (article_id) {
     commentPromises.push(checkExists("articles", "article_id", article_id));
   }
@@ -120,6 +125,8 @@ exports.getCommentsByArticleId = (req, res, next) => {
       res.status(200).send({ comments });
     })
     .catch(next);
+  }
+  
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
@@ -157,11 +164,11 @@ exports.getUserByUsername = (req, res, next) => {
 };
 
 exports.patchCommentByCommentId = (req, res, next) => {
-  const { comment_id } = req.params
-  const { inc_votes } = req.body
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
   updatesCommentByCommentId(comment_id, inc_votes)
-  .then((updatedComment) => {
-    res.status(200).send(updatedComment)
-  })
-  .catch(next)
-}
+    .then((updatedComment) => {
+      res.status(200).send(updatedComment);
+    })
+    .catch(next);
+};

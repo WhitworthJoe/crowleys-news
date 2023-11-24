@@ -729,7 +729,7 @@ describe("GET /api/articles?page=page&limit=limit", () => {
       .get("/api/articles?page=1&limit=10")
       .expect(200)
       .then(({ body }) => {
-        const articles = body
+        const articles = body;
         expect(articles).toHaveLength(10);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
@@ -743,7 +743,7 @@ describe("GET /api/articles?page=page&limit=limit", () => {
             article_img_url: expect.any(String),
             comment_count: expect.any(String),
           });
-          expect(articles).not.toHaveProperty("body")
+          expect(articles).not.toHaveProperty("body");
         });
       });
   });
@@ -752,7 +752,7 @@ describe("GET /api/articles?page=page&limit=limit", () => {
       .get("/api/articles?page=2&limit=10")
       .expect(200)
       .then(({ body }) => {
-        const articles = body
+        const articles = body;
         expect(articles).toHaveLength(3);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
@@ -766,7 +766,7 @@ describe("GET /api/articles?page=page&limit=limit", () => {
             article_img_url: expect.any(String),
             comment_count: expect.any(String),
           });
-          expect(articles).not.toHaveProperty("body")
+          expect(articles).not.toHaveProperty("body");
         });
       });
   });
@@ -775,17 +775,74 @@ describe("GET /api/articles?page=page&limit=limit", () => {
       .get("/api/articles?page=100&limit=10")
       .expect(404)
       .then(({ body }) => {
-        const articles = body
-        expect(articles.msg).toBe("page doesn't exist")
-      })
+        const articles = body;
+        expect(articles.msg).toBe("page doesn't exist");
+      });
   });
   test("400: return error for invalid page parameters", () => {
     return request(app)
       .get("/api/articles?page=-1&limit=10")
       .expect(400)
       .then(({ body }) => {
-        const articles = body
-        expect(articles.msg).toBe("page doesn't exist")
-      })
+        const articles = body;
+        expect(articles.msg).toBe("page doesn't exist");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments?page=page&limit=limit", () => {
+  test("200: should return an array of paginated comments from the specified article_id ", () => {
+    return request(app)
+      .get("/api/articles/1/comments?page=1&limit=10")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toHaveLength(10);
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("200: should return the second page of comments relating to specified article", () => {
+    return request(app)
+      .get("/api/articles/1/comments?page=2&limit=10")
+      .expect(200)
+      .then(({ body }) => {
+        const {comments} = body;
+        expect(comments).toHaveLength(1);
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("404: return error for pages out-of-range", () => {
+    return request(app)
+      .get("/api/articles/100/comments?page=100&limit=10")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No comments for this article");
+      });
+  });
+  test("400: return error for invalid page parameters", () => {
+    return request(app)
+      .get("/api/articles/1/comments?page=-1&limit=10")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("page doesn't exist");
+      });
   });
 });
