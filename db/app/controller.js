@@ -35,9 +35,13 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { topic, sort_by, order } = req.query;
+  const { topic, sort_by, order, page, limit } = req.query;
   const validSorts = ["title", "topic", "author", "created_at", "votes"];
   const validOrders = ["asc", "desc"];
+
+  if (page && (isNaN(page)) || page < 1){
+    return res.status(400).send({msg: "page doesn't exist"})
+  }
 
   if (req.query.hasOwnProperty("topic")) {
     selectArticlesByTopic(topic)
@@ -66,7 +70,7 @@ exports.getArticles = (req, res, next) => {
   ) {
     res.status(400).json({ msg: "invalid search parameter" });
   } else {
-    selectArticles()
+    selectArticles(page, limit)
       .then((articles) => {
         res.status(200).send(articles);
       })
