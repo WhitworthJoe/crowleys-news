@@ -136,7 +136,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toHaveLength(13);
+        expect(body).toHaveLength(10);
         expect(body).toBeSortedBy("created_at", { descending: true });
         body.forEach((article) => {
           expect(article).toMatchObject({
@@ -218,7 +218,7 @@ describe("POST /api/articles", () => {
       title: "I am a cat.",
       body: "Since my last article I have in fact, in all forms except physical, become a cat.",
       topic: "cats",
-      favouriteCat: "Crowley"
+      favouriteCat: "Crowley",
     };
     return request(app)
       .post("/api/articles")
@@ -240,48 +240,48 @@ describe("POST /api/articles", () => {
         });
       });
   });
-  test('400: returns error if any required properties are missing in the request', () => {
+  test("400: returns error if any required properties are missing in the request", () => {
     const newArticle = {
       author: "icellusedkars",
-      body: "Oh wait, I forgot to add a title!!"
-    }
+      body: "Oh wait, I forgot to add a title!!",
+    };
     return request(app)
-    .post('/api/articles')
-    .send(newArticle)
-    .expect(400)
-    .then(({body}) => {
-      expect(body.msg).toBe("bad request. Missing required information")
-    })
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request. Missing required information");
+      });
   });
-  test('404: returns error if topic does not exist within database', () => {
+  test("404: returns error if topic does not exist within database", () => {
     const newArticle = {
       author: "icellusedkars",
       title: "I cant stand them dogs since becoming a cat",
       body: "Do dogs even have thoughts in their heads? Not like us cats!",
-      topic: "dogs"
-    }
+      topic: "dogs",
+    };
     return request(app)
-    .post('/api/articles')
-    .send(newArticle)
-    .expect(404)
-    .then(({body}) => {
-      expect(body.msg).toBe("topic does not exist")
-    })
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("topic does not exist");
+      });
   });
-  test('404: returns error if author username does not exist within database', () => {
+  test("404: returns error if author username does not exist within database", () => {
     const newArticle = {
       author: "itzCrowley",
       title: "Yo its me, ya boy",
       body: "Im just coming here to say Hi, I havent even made an account yet, isn't it cool I can still post!",
-      topic: "cats"
-    }
+      topic: "cats",
+    };
     return request(app)
-    .post('/api/articles')
-    .send(newArticle)
-    .expect(404)
-    .then(({body}) => {
-      expect(body.msg).toBe("username not found")
-    })
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username not found");
+      });
   });
 });
 
@@ -720,5 +720,72 @@ describe("GET /api/articles?sort_by=created_at&order=desc", () => {
       .then((response) => {
         expect(response.body.msg).toBe("invalid search parameter");
       });
+  });
+});
+
+describe("GET /api/articles?page=page&limit=limit", () => {
+  test("200: should return an array of paginated articles ", () => {
+    return request(app)
+      .get("/api/articles?page=1&limit=10")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body
+        expect(articles).toHaveLength(10);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+          expect(articles).not.toHaveProperty("body")
+        });
+      });
+  });
+  test("200: should return the second page of articles", () => {
+    return request(app)
+      .get("/api/articles?page=2&limit=10")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body
+        expect(articles).toHaveLength(3);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+          expect(articles).not.toHaveProperty("body")
+        });
+      });
+  });
+  test("404: return error for pages out-of-range", () => {
+    return request(app)
+      .get("/api/articles?page=100&limit=10")
+      .expect(404)
+      .then(({ body }) => {
+        const articles = body
+        expect(articles.msg).toBe("page doesn't exist")
+      })
+  });
+  test("400: return error for invalid page parameters", () => {
+    return request(app)
+      .get("/api/articles?page=-1&limit=10")
+      .expect(400)
+      .then(({ body }) => {
+        const articles = body
+        expect(articles.msg).toBe("page doesn't exist")
+      })
   });
 });
