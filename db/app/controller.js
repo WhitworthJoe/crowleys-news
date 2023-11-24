@@ -13,6 +13,7 @@ const {
   selectArticlesSortOrder,
   selectArticlesSort,
   selectUserByUsername,
+  updatesCommentByCommentId,
 } = require("./model");
 const { checkExists } = require("./utils");
 
@@ -137,3 +138,13 @@ exports.getUserByUsername = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.patchCommentByCommentId = (req, res, next) => {
+  const { comment_id } = req.params
+  const { inc_votes } = req.body
+  updatesCommentByCommentId(comment_id, inc_votes)
+  .then((updatedComment) => {
+    res.status(200).send(updatedComment)
+  })
+  .catch(next)
+}
